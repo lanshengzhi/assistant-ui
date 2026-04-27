@@ -10,6 +10,9 @@ import type { SuggestionsClientSchema } from "./scopes/suggestions";
 import type { SuggestionClientSchema } from "./scopes/suggestion";
 import type { ChainOfThoughtClientSchema } from "./scopes/chain-of-thought";
 import type { QueueItemClientSchema } from "./scopes/queue-item";
+import type { SpaceClientSchema } from "./scopes/space";
+import type { ChannelClientSchema } from "./scopes/channel";
+import type { ParticipantClientSchema } from "./scopes/participant";
 
 declare module "@assistant-ui/store" {
   interface ScopeRegistry {
@@ -25,5 +28,8 @@ declare module "@assistant-ui/store" {
     suggestion: SuggestionClientSchema;
     chainOfThought: ChainOfThoughtClientSchema;
     queueItem: QueueItemClientSchema;
+    space: SpaceClientSchema;
+    channel: ChannelClientSchema;
+    participant: ParticipantClientSchema;
   }
 }
