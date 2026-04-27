@@ -235,3 +235,39 @@ export type AppendMessage = Omit<ThreadMessage, "id"> & {
   runConfig: RunConfig | undefined;
   startRun?: boolean | undefined;
 };
+
+// ─── Space-First Message Types (Participant model) ─────────────────
+
+/** Message in a collaborative Space thread, using participantId instead of role enum */
+export type SpaceThreadMessage = MessageCommonProps & {
+  /** ID of the participant who sent this message */
+  readonly participantId: string;
+  readonly content: readonly ThreadAssistantMessagePart[];
+  readonly status: MessageStatus;
+  /** Optional parent message ID for threading/replies */
+  readonly parentId?: string;
+  /** Reactions on this message */
+  readonly reactions?: readonly MessageReaction[];
+  readonly metadata: {
+    readonly unstable_state: ReadonlyJSONValue;
+    readonly unstable_annotations: readonly ReadonlyJSONValue[];
+    readonly unstable_data: readonly ReadonlyJSONValue[];
+    readonly steps: readonly ThreadStep[];
+    readonly submittedFeedback?: { readonly type: "positive" | "negative" };
+    readonly timing?: MessageTiming;
+    readonly custom: Record<string, unknown>;
+  };
+};
+
+export type MessageReaction = {
+  readonly emoji: string;
+  readonly participantId: string;
+  readonly createdAt: Date;
+};
+
+export type SpaceAppendMessage = Omit<SpaceThreadMessage, "id"> & {
+  /** The ID of the parent message (for threading) */
+  parentId: string | null;
+  /** The ID of the message that was edited */
+  sourceId: string | null;
+};

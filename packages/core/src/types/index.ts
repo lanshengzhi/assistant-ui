@@ -48,3 +48,27 @@ export type {
   Unstable_TriggerItem,
   Unstable_TriggerCategory,
 } from "./trigger";
+
+// ─── Space-First Collaborative Types ─────────────────
+
+export type {
+  Space,
+  Channel,
+} from "./space";
+
+export type {
+  Participant,
+  HumanParticipant,
+  AgentParticipant,
+  SystemParticipant,
+  ParticipantStatus,
+  ParticipantRole,
+  AgentCapabilities,
+  ThinkingStep,
+} from "./participant";
+
+export type {
+  SpaceThreadMessage,
+  SpaceAppendMessage,
+  MessageReaction,
+} from "./message";
