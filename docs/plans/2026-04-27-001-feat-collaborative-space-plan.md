@@ -1,10 +1,11 @@
 ---
 title: "Collaborative Space for Human-AI Teams"
 type: feat
-status: active
+status: completed
 date: 2026-04-27
 origin: docs/brainstorms/2026-04-27-collaborative-space-requirements.md
 deepened: 2026-04-27
+completed: 2026-04-28
 ---
 
 # Collaborative Space for Human-AI Teams
