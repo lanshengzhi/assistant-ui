@@ -45,3 +45,20 @@ This repo is a fork of `assistant-ui`. Follow these rules to keep history clean 
   2. Push to the fork remote (`origin`)
   3. Do NOT merge into `main`
 - **No PR creation** — Unless explicitly asked by the user, do not create pull requests (either to upstream or within the fork).
+
+## Quality Checks
+
+Before marking any task as complete or committing changes that touch behavior-bearing code, run all three checks:
+
+```bash
+# 1. Tests
+cd packages/core && node_modules/.bin/vitest run
+
+# 2. Lint
+npx biome check packages/core/src/path/to/changed/files
+
+# 3. TypeScript compilation
+cd packages/core && npx tsc --noEmit
+```
+
+**Important:** `tsc --noEmit` catches type errors that Vitest (which uses esbuild for transpilation) does not. Do not skip this step.
