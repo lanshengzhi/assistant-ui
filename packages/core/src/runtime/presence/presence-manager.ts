@@ -26,8 +26,6 @@ export class PresenceManager {
       offlineThreshold: 30 * 60 * 1000, // 30 minutes
       ...options,
     };
-
-    this._startIdleTimer();
   }
 
   /**
@@ -38,6 +36,7 @@ export class PresenceManager {
       status,
       lastSeen: Date.now(),
     });
+    this._ensureIdleTimer();
     this._notify();
   }
 
@@ -69,6 +68,9 @@ export class PresenceManager {
    */
   removeParticipant(participantId: string): void {
     this._presence.delete(participantId);
+    if (this._presence.size === 0) {
+      this._stopIdleTimer();
+    }
     this._notify();
   }
 
@@ -98,6 +100,7 @@ export class PresenceManager {
       status: event.status,
       lastSeen: event.timestamp,
     });
+    this._ensureIdleTimer();
     this._notify();
   }
 
@@ -117,6 +120,11 @@ export class PresenceManager {
         lastSeen: p.lastSeen,
       });
     }
+    if (participants.length > 0) {
+      this._ensureIdleTimer();
+    } else {
+      this._stopIdleTimer();
+    }
     this._notify();
   }
 
@@ -128,18 +136,38 @@ export class PresenceManager {
   }
 
   dispose(): void {
+    this._stopIdleTimer();
+  }
+
+  private _ensureIdleTimer(): void {
+    if (!this._idleTimer && this._presence.size > 0) {
+      this._startIdleTimer();
+    }
+  }
+
+  private _stopIdleTimer(): void {
     if (this._idleTimer) {
       clearInterval(this._idleTimer);
+      this._idleTimer = null;
     }
   }
 
   private _startIdleTimer(): void {
     this._idleTimer = setInterval(() => {
+      if (this._presence.size === 0) {
+        this._stopIdleTimer();
+        return;
+      }
+
       const now = Date.now();
       let hasChanges = false;
 
       for (const [participantId, state] of this._presence) {
-        if (state.status === "online" || state.status === "busy") {
+        if (
+          state.status === "online" ||
+          state.status === "busy" ||
+          state.status === "away"
+        ) {
           const idleTime = now - state.lastSeen;
 
           if (idleTime > this._options.offlineThreshold) {
@@ -148,7 +176,10 @@ export class PresenceManager {
               status: "offline",
             });
             hasChanges = true;
-          } else if (idleTime > this._options.awayThreshold) {
+          } else if (
+            idleTime > this._options.awayThreshold &&
+            state.status !== "away"
+          ) {
             this._presence.set(participantId, {
               ...state,
               status: "away",

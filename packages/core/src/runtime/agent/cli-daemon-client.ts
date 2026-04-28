@@ -2,7 +2,6 @@
 
 import type {
   AgentInvocationRequest,
-  AgentInvocationResponse,
   AgentStreamEvent,
   DaemonHealthStatus,
 } from "./protocol";
@@ -109,12 +108,20 @@ export class HttpCLIDaemonClient implements CLIDaemonClient {
 
       const decoder = new TextDecoder();
       let buffer = "";
+      const MAX_BUFFER_SIZE = 10 * 1024 * 1024; // 10MB
 
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
 
         buffer += decoder.decode(value, { stream: true });
+
+        if (buffer.length > MAX_BUFFER_SIZE) {
+          throw new Error(
+            `SSE buffer exceeded maximum size (${MAX_BUFFER_SIZE} bytes)`,
+          );
+        }
+
         const lines = buffer.split("\n");
         buffer = lines.pop() || "";
 
@@ -125,7 +132,7 @@ export class HttpCLIDaemonClient implements CLIDaemonClient {
             try {
               const event: AgentStreamEvent = JSON.parse(data);
               this._handleEvent(event, callbacks);
-            } catch (e) {
+            } catch (_e) {
               // Ignore parse errors for malformed events
             }
           }

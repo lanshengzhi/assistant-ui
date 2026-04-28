@@ -1,7 +1,4 @@
-import type {
-  AgentParticipant,
-  AgentCapabilities,
-} from "../../types/participant";
+import type { AgentCapabilities } from "../../types/participant";
 
 export type AgentConfig = {
   participantId: string;

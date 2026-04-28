@@ -2,8 +2,7 @@
 
 import type { AgentRegistry } from "./agent-registry";
 import type { CLIDaemonClient } from "./cli-daemon-client";
-import type { AgentInvocationRequest, ThreadContext } from "./protocol";
-import type { SpaceThreadMessage } from "../../types/message";
+import type { AgentInvocationRequest } from "./protocol";
 import type { Participant } from "../../types/participant";
 
 export type AgentInvokerOptions = {
@@ -83,21 +82,37 @@ export class AgentInvoker {
           messageContent += content;
         },
         onComplete: () => {
-          // Only send message if there's content
-          if (messageContent.trim()) {
-            this._options.onMessage({
-              participantId: agentId,
-              content: messageContent,
-            });
+          try {
+            // Only send message if there's content
+            if (messageContent.trim()) {
+              this._options.onMessage({
+                participantId: agentId,
+                content: messageContent,
+              });
+            }
+          } catch (callbackError) {
+            console.error(
+              "AgentInvoker onMessage callback failed:",
+              callbackError,
+            );
+          } finally {
+            this._cleanup(agentId);
           }
-          this._cleanup(agentId);
         },
         onError: (error) => {
-          this._options.onError({
-            participantId: agentId,
-            message: error.message,
-          });
-          this._cleanup(agentId);
+          try {
+            this._options.onError({
+              participantId: agentId,
+              message: error.message,
+            });
+          } catch (callbackError) {
+            console.error(
+              "AgentInvoker onError callback failed:",
+              callbackError,
+            );
+          } finally {
+            this._cleanup(agentId);
+          }
         },
       });
     } catch (error) {
@@ -124,7 +139,7 @@ export class AgentInvoker {
    * Cancel all active invocations.
    */
   cancelAll(): void {
-    for (const [agentId, client] of this._activeInvocations) {
+    for (const [_agentId, client] of this._activeInvocations) {
       client.cancel();
     }
     this._activeInvocations.clear();

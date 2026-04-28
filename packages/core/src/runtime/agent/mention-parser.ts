@@ -24,10 +24,19 @@ export type ParseMentionsResult = {
  * - Email addresses: user@example.com
  * - @ at end of word: word@notamention
  */
+const MAX_CONTENT_LENGTH = 100_000;
+
 export function parseMentions(
   content: string,
   verifyParticipant: (id: string) => boolean,
 ): ParseMentionsResult {
+  if (content.length > MAX_CONTENT_LENGTH) {
+    console.warn(
+      `Message content exceeds max length (${MAX_CONTENT_LENGTH}), truncating mention parsing`,
+    );
+    return { mentions: [], text: content };
+  }
+
   const mentions: Mention[] = [];
 
   // Match @mentions, but not escaped or email addresses
