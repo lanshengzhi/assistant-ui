@@ -62,7 +62,7 @@ describe("AgentOrchestrator", () => {
         "user",
         "@AgentA task",
       );
-      expect(orchestrator.getDepth("thread-1")).toBe(0); // Depth resets after completion
+      expect(orchestrator.getDepth("thread-1")).toBe(1); // Depth increments after completion
 
       // Second invocation triggered by AgentA's response
       await orchestrator.handleAgentResponse(
@@ -70,7 +70,7 @@ describe("AgentOrchestrator", () => {
         "AgentA",
         "@AgentB next",
       );
-      expect(orchestrator.getDepth("thread-1")).toBe(0);
+      expect(orchestrator.getDepth("thread-1")).toBe(2);
 
       // Third invocation
       await orchestrator.handleAgentResponse(
@@ -78,6 +78,7 @@ describe("AgentOrchestrator", () => {
         "AgentB",
         "@AgentC done",
       );
+      expect(orchestrator.getDepth("thread-1")).toBe(3);
       expect(invokeCalls.map((c) => c.agentId)).toEqual([
         "AgentA",
         "AgentB",
@@ -88,20 +89,32 @@ describe("AgentOrchestrator", () => {
 
   describe("depth limit", () => {
     it("should stop at max depth", async () => {
+      // Create orchestrator with high rate limit to avoid rate limiting interference
+      const deepOrchestrator = new AgentOrchestrator({
+        invoker: mockInvoker,
+        verifyParticipant: (id) =>
+          ["AgentA", "AgentB", "AgentC", "AgentD", "AgentE", "AgentF"].includes(
+            id,
+          ),
+        maxDepth: 3,
+        maxBreadth: 3,
+        maxInvocationsPerMinute: 100, // High limit to avoid rate limiting
+      });
+
       // Simulate reaching max depth by calling multiple times
-      for (let i = 0; i < 5; i++) {
-        await orchestrator.handleAgentResponse(
+      for (let i = 0; i < 3; i++) {
+        await deepOrchestrator.handleAgentResponse(
           "thread-1",
           `Agent${i}`,
           "@AgentB task",
         );
       }
 
-      // Sixth invocation should be blocked
+      // Fourth invocation should be blocked by depth limit
       const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
-      await orchestrator.handleAgentResponse(
+      await deepOrchestrator.handleAgentResponse(
         "thread-1",
-        "Agent5",
+        "Agent3",
         "@AgentB task",
       );
       expect(consoleSpy).toHaveBeenCalledWith(
@@ -111,35 +124,34 @@ describe("AgentOrchestrator", () => {
     });
 
     it("should block circular references", async () => {
+      // Create orchestrator with high rate limit to avoid rate limiting interference
+      const circularOrchestrator = new AgentOrchestrator({
+        invoker: mockInvoker,
+        verifyParticipant: (id) => ["AgentA", "AgentB"].includes(id),
+        maxDepth: 3,
+        maxBreadth: 3,
+        maxInvocationsPerMinute: 100,
+      });
+
       // A -> B -> A should be blocked by depth
-      await orchestrator.handleAgentResponse(
+      await circularOrchestrator.handleAgentResponse(
         "thread-1",
         "user",
         "@AgentA task",
       );
-      await orchestrator.handleAgentResponse(
+      await circularOrchestrator.handleAgentResponse(
         "thread-1",
         "AgentA",
         "@AgentB task",
       );
-      await orchestrator.handleAgentResponse(
-        "thread-1",
-        "AgentB",
-        "@AgentA task",
-      );
-      await orchestrator.handleAgentResponse(
-        "thread-1",
-        "AgentA",
-        "@AgentB task",
-      );
-      await orchestrator.handleAgentResponse(
+      await circularOrchestrator.handleAgentResponse(
         "thread-1",
         "AgentB",
         "@AgentA task",
       );
 
       const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
-      await orchestrator.handleAgentResponse(
+      await circularOrchestrator.handleAgentResponse(
         "thread-1",
         "AgentA",
         "@AgentB task",
@@ -199,8 +211,15 @@ describe("AgentOrchestrator", () => {
         "user",
         "@AgentA task",
       );
-      // Depth resets after handleAgentResponse completes
-      expect(orchestrator.getDepth("thread-1")).toBe(0);
+      // Depth increments after handleAgentResponse completes
+      expect(orchestrator.getDepth("thread-1")).toBe(1);
+
+      await orchestrator.handleAgentResponse(
+        "thread-1",
+        "AgentA",
+        "@AgentB task",
+      );
+      expect(orchestrator.getDepth("thread-1")).toBe(2);
     });
   });
 });

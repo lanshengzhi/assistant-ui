@@ -11,22 +11,42 @@ export type ExportedMultiParticipantMessageRepository = {
   messages: MultiParticipantMessageRepositoryItem[];
 };
 
+export type MultiParticipantMessageRepositoryOptions = {
+  /** Validate that a participant ID exists. Throws if invalid. */
+  validateParticipant?: (participantId: string) => boolean;
+};
+
 export class MultiParticipantMessageRepository {
   private _messages = new Map<string, SpaceThreadMessage>();
   private _parentMap = new Map<string, string | null>();
   private _childrenMap = new Map<string, Set<string>>();
   private _headId: string | null = null;
   private _subscriptions = new Set<() => void>();
+  private _validateParticipant?: (participantId: string) => boolean;
+
+  constructor(options: MultiParticipantMessageRepositoryOptions = {}) {
+    this._validateParticipant = options.validateParticipant;
+  }
 
   /**
    * Add or update a message in the repository.
    * @param parentId The parent message ID (for threading)
    * @param message The message to add/update
+   * @throws Error if participant validation fails
    */
   addOrUpdateMessage(
     parentId: string | null,
     message: SpaceThreadMessage,
   ): void {
+    // Validate participant if validator is configured
+    if (this._validateParticipant) {
+      if (!this._validateParticipant(message.participantId)) {
+        throw new Error(
+          `Invalid participant ID: ${message.participantId}. Message cannot be added to repository.`,
+        );
+      }
+    }
+
     const existing = this._messages.get(message.id);
 
     // Store message

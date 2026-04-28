@@ -90,12 +90,8 @@ export class AgentOrchestrator {
           threadId,
         });
       }
-
-      // Decrement depth after all invocations complete
-      this._invocationDepth.set(threadId, currentDepth);
     } catch (error) {
       // Abort entire chain on error
-      this._invocationDepth.set(threadId, currentDepth);
       const errorMessage =
         error instanceof Error ? error.message : String(error);
       this._onSystemMessage(
