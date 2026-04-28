@@ -1,6 +1,5 @@
-import type { Channel } from "../../types/space";
-import type { SpaceThreadMessage } from "../../types/message";
-import { generateId } from "../../utils/id";
+import type { Channel } from "../types/space";
+import { generateId } from "../utils/id";
 
 export type ChannelRuntimeCore = {
   readonly channel: Channel | null;
@@ -40,7 +39,7 @@ export class LocalChannelRuntimeCore implements ChannelRuntimeCore {
     return this._isLoading;
   }
 
-  async load(channelId: string): Promise<void> {
+  async load(_channelId: string): Promise<void> {
     this._isLoading = true;
     this._notify();
 
@@ -76,7 +75,7 @@ export class LocalChannelRuntimeCore implements ChannelRuntimeCore {
     this._notify();
   }
 
-  createThread(title?: string): string {
+  createThread(_title?: string): string {
     if (!this._channel) throw new Error("Channel not initialized");
 
     const threadId = generateId();

@@ -7,7 +7,7 @@ export type AgentRegistrationProps = {
     displayName: string;
     capabilities: string[];
     port: number;
-    authToken?: string;
+    authToken?: string | undefined;
   }) => void;
 };
 

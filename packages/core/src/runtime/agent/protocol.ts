@@ -1,6 +1,6 @@
 /** Agent invocation protocol types */
 
-import type { SpaceThreadMessage } from "../types/message";
+import type { SpaceThreadMessage } from "../../types/message";
 
 /** Request to invoke an agent */
 export type AgentInvocationRequest = {

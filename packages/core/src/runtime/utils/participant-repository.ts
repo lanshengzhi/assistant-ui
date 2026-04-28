@@ -49,7 +49,7 @@ export class InMemoryParticipantRepository implements ParticipantRepository {
     this._participants.set(participantId, {
       ...participant,
       ...updates,
-    });
+    } as Participant);
     this._notify();
   }
 

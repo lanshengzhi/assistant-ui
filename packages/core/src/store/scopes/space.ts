@@ -1,4 +1,4 @@
-import type { Space, Channel } from "../../types/space";
+import type { Space } from "../../types/space";
 
 export type SpaceState = {
   readonly space: Space | null;

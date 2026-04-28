@@ -1,6 +1,6 @@
-import type { Space, Channel } from "../../types/space";
-import type { Participant } from "../../types/participant";
-import { generateId } from "../../utils/id";
+import type { Space, Channel } from "../types/space";
+import type { Participant } from "../types/participant";
+import { generateId } from "../utils/id";
 
 export type SpaceRuntimeCore = {
   readonly space: Space | null;
@@ -64,7 +64,7 @@ export class LocalSpaceRuntimeCore implements SpaceRuntimeCore {
     return space;
   }
 
-  async load(spaceId: string): Promise<void> {
+  async load(_spaceId: string): Promise<void> {
     this._isLoading = true;
     this._notify();
 
@@ -97,7 +97,7 @@ export class LocalSpaceRuntimeCore implements SpaceRuntimeCore {
     if (!this._space) throw new Error("Space not initialized");
 
     // Check for duplicate names
-    if (this._space.channels.some((c) => c.name === name)) {
+    if (this._space.channels.some((c: Channel) => c.name === name)) {
       throw new Error(`Channel "${name}" already exists`);
     }
 
@@ -121,12 +121,14 @@ export class LocalSpaceRuntimeCore implements SpaceRuntimeCore {
   archiveChannel(channelId: string): void {
     if (!this._space) throw new Error("Space not initialized");
 
-    const channel = this._space.channels.find((c) => c.id === channelId);
+    const channel = this._space.channels.find(
+      (c: Channel) => c.id === channelId,
+    );
     if (!channel) throw new Error(`Channel ${channelId} not found`);
 
     this._space = {
       ...this._space,
-      channels: this._space.channels.map((c) =>
+      channels: this._space.channels.map((c: Channel) =>
         c.id === channelId ? { ...c, archived: true } : c,
       ),
       updatedAt: new Date(),
@@ -139,7 +141,7 @@ export class LocalSpaceRuntimeCore implements SpaceRuntimeCore {
 
     this._space = {
       ...this._space,
-      channels: this._space.channels.map((c) =>
+      channels: this._space.channels.map((c: Channel) =>
         c.id === channelId ? { ...c, name } : c,
       ),
       updatedAt: new Date(),
@@ -148,7 +150,7 @@ export class LocalSpaceRuntimeCore implements SpaceRuntimeCore {
   }
 
   getChannel(channelId: string): Channel | undefined {
-    return this._space?.channels.find((c) => c.id === channelId);
+    return this._space?.channels.find((c: Channel) => c.id === channelId);
   }
 
   addParticipant(participant: Omit<Participant, "joinedAt">): Participant {

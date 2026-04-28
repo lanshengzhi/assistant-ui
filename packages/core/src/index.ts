@@ -271,3 +271,62 @@ export {
   getEnabledTools,
   createRequestHeaders,
 } from "./runtimes/assistant-transport/utils";
+
+// ─── Space-First Collaborative Types ─────────────────
+
+export type {
+  Space,
+  Channel,
+} from "./types/space";
+
+export type {
+  Participant,
+  HumanParticipant,
+  AgentParticipant,
+  SystemParticipant,
+  ParticipantStatus,
+  ParticipantRole,
+  AgentCapabilities,
+  ThinkingStep,
+} from "./types/participant";
+
+export type {
+  SpaceThreadMessage,
+  SpaceAppendMessage,
+  MessageReaction,
+} from "./types/message";
+
+export type {
+  MultiParticipantMessageRepositoryItem,
+  ExportedMultiParticipantMessageRepository,
+  MultiParticipantMessageRepositoryOptions,
+  MultiParticipantMessageRepository,
+} from "./runtime/utils/multi-participant-message-repository";
+
+export type {
+  AgentInvokerOptions,
+  AgentInvoker,
+} from "./runtime/agent/agent-invoker";
+
+export type {
+  AgentOrchestrator,
+  OrchestratorOptions,
+} from "./runtime/agent/agent-orchestrator";
+
+export type {
+  Mention,
+  ParseMentionsResult,
+} from "./runtime/agent/mention-parser";
+
+export type {
+  PresenceManagerOptions,
+  PresenceState,
+  PresenceManager,
+} from "./runtime/presence/presence-manager";
+
+export type {
+  PresenceEvent,
+  PresenceSyncEvent,
+  PresenceTransportEvent,
+  PresenceStatus,
+} from "./runtime/presence/presence-events";
