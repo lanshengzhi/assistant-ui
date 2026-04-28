@@ -1,5 +1,4 @@
 import type { SpaceThreadMessage } from "../../types/message";
-import { generateId, generateOptimisticId } from "../../utils/id";
 
 export type MultiParticipantMessageRepositoryItem = {
   message: SpaceThreadMessage;
@@ -23,6 +22,11 @@ export class MultiParticipantMessageRepository {
   private _headId: string | null = null;
   private _subscriptions = new Set<() => void>();
   private _validateParticipant?: (participantId: string) => boolean;
+  private _pendingUpdates: Array<{
+    parentId: string | null;
+    message: SpaceThreadMessage;
+  }> = [];
+  private _isProcessing = false;
 
   constructor(options: MultiParticipantMessageRepositoryOptions = {}) {
     this._validateParticipant = options.validateParticipant;
@@ -35,6 +39,29 @@ export class MultiParticipantMessageRepository {
    * @throws Error if participant validation fails
    */
   addOrUpdateMessage(
+    parentId: string | null,
+    message: SpaceThreadMessage,
+  ): void {
+    // Queue the update to prevent re-entrant state corruption
+    this._pendingUpdates.push({ parentId, message });
+
+    if (this._isProcessing) {
+      return;
+    }
+
+    this._isProcessing = true;
+
+    try {
+      while (this._pendingUpdates.length > 0) {
+        const update = this._pendingUpdates.shift()!;
+        this._processUpdate(update.parentId, update.message);
+      }
+    } finally {
+      this._isProcessing = false;
+    }
+  }
+
+  private _processUpdate(
     parentId: string | null,
     message: SpaceThreadMessage,
   ): void {

@@ -1,10 +1,6 @@
 /** SSE Presence Transport */
 
-import type {
-  PresenceEvent,
-  PresenceSyncEvent,
-  PresenceTransportEvent,
-} from "./presence-events";
+import type { PresenceEvent, PresenceTransportEvent } from "./presence-events";
 
 export type SSEPresenceTransportOptions = {
   /** SSE endpoint URL */
@@ -54,10 +50,11 @@ export class DefaultSSEPresenceTransport implements SSEPresenceTransport {
 
     const url = new URL(this._options.endpoint);
     url.searchParams.set("spaceId", this._options.spaceId);
+    if (this._options.authToken) {
+      url.searchParams.set("token", this._options.authToken);
+    }
 
-    this._eventSource = new EventSource(url.toString(), {
-      withCredentials: !!this._options.authToken,
-    });
+    this._eventSource = new EventSource(url.toString());
 
     this._eventSource.onopen = () => {
       this._reconnectAttempts = 0;

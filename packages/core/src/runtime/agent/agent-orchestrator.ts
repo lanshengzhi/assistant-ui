@@ -18,6 +18,9 @@ export class AgentOrchestrator {
   private _options: Required<OrchestratorOptions>;
   private _invocationDepth = new Map<string, number>();
   private _invocationTimestamps = new Map<string, number[]>();
+  private _depthResetTimers = new Map<string, ReturnType<typeof setTimeout>>();
+  /** Timeout in ms after which invocation depth auto-resets (default: 30s) */
+  private _depthResetTimeout = 30000;
 
   constructor(options: OrchestratorOptions) {
     this._options = {
@@ -72,6 +75,17 @@ export class AgentOrchestrator {
     // Increment depth
     this._invocationDepth.set(threadId, currentDepth + 1);
 
+    // Clear existing reset timer and schedule a new one
+    const existingTimer = this._depthResetTimers.get(threadId);
+    if (existingTimer) {
+      clearTimeout(existingTimer);
+    }
+    const resetTimer = setTimeout(() => {
+      this._invocationDepth.delete(threadId);
+      this._depthResetTimers.delete(threadId);
+    }, this._depthResetTimeout);
+    this._depthResetTimers.set(threadId, resetTimer);
+
     try {
       // Queue invocations for each mentioned agent
       for (const mention of limitedMentions) {
@@ -106,6 +120,11 @@ export class AgentOrchestrator {
    * Reset depth for a thread (e.g., when user sends new message).
    */
   resetDepth(threadId: string): void {
+    const existingTimer = this._depthResetTimers.get(threadId);
+    if (existingTimer) {
+      clearTimeout(existingTimer);
+      this._depthResetTimers.delete(threadId);
+    }
     this._invocationDepth.delete(threadId);
   }
 
