@@ -1,6 +1,10 @@
 /** SSE Presence Transport */
 
-import type { PresenceEvent, PresenceSyncEvent, PresenceTransportEvent } from "./presence-events";
+import type {
+  PresenceEvent,
+  PresenceSyncEvent,
+  PresenceTransportEvent,
+} from "./presence-events";
 
 export type SSEPresenceTransportOptions = {
   /** SSE endpoint URL */
@@ -135,11 +139,15 @@ export class DefaultSSEPresenceTransport implements SSEPresenceTransport {
     }
 
     this._reconnectAttempts++;
-    const delay = this._options.reconnectDelay * Math.pow(2, this._reconnectAttempts - 1);
+    const delay =
+      this._options.reconnectDelay * 2 ** (this._reconnectAttempts - 1);
 
-    this._reconnectTimer = setTimeout(() => {
-      this.connect();
-    }, Math.min(delay, 30000)); // Cap at 30 seconds
+    this._reconnectTimer = setTimeout(
+      () => {
+        this.connect();
+      },
+      Math.min(delay, 30000),
+    ); // Cap at 30 seconds
   }
 
   private _notifyEvent(event: PresenceTransportEvent): void {

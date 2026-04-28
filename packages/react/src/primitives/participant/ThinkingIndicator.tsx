@@ -38,4 +38,5 @@ export const ParticipantPrimitiveThinkingIndicator = forwardRef<
   );
 });
 
-ParticipantPrimitiveThinkingIndicator.displayName = "ParticipantPrimitive.ThinkingIndicator";
+ParticipantPrimitiveThinkingIndicator.displayName =
+  "ParticipantPrimitive.ThinkingIndicator";

@@ -2,18 +2,21 @@ import type { Participant, ParticipantStatus } from "../../types/participant";
 
 export type ParticipantRepository = {
   readonly participants: readonly Participant[];
-  
+
   // CRUD operations
   add(participant: Participant): void;
   remove(participantId: string): void;
-  update(participantId: string, updates: Partial<Omit<Participant, "id">>): void;
+  update(
+    participantId: string,
+    updates: Partial<Omit<Participant, "id">>,
+  ): void;
   get(participantId: string): Participant | undefined;
   getByRole(role: Participant["role"]): readonly Participant[];
-  
+
   // Status management
   setStatus(participantId: string, status: ParticipantStatus): void;
   getOnlineParticipants(): readonly Participant[];
-  
+
   // Subscriptions
   subscribe(callback: () => void): () => void;
 };
@@ -36,10 +39,13 @@ export class InMemoryParticipantRepository implements ParticipantRepository {
     this._notify();
   }
 
-  update(participantId: string, updates: Partial<Omit<Participant, "id">>): void {
+  update(
+    participantId: string,
+    updates: Partial<Omit<Participant, "id">>,
+  ): void {
     const participant = this._participants.get(participantId);
     if (!participant) throw new Error(`Participant ${participantId} not found`);
-    
+
     this._participants.set(participantId, {
       ...participant,
       ...updates,
@@ -52,13 +58,13 @@ export class InMemoryParticipantRepository implements ParticipantRepository {
   }
 
   getByRole(role: Participant["role"]): readonly Participant[] {
-    return this.participants.filter(p => p.role === role);
+    return this.participants.filter((p) => p.role === role);
   }
 
   setStatus(participantId: string, status: ParticipantStatus): void {
     const participant = this._participants.get(participantId);
     if (!participant) throw new Error(`Participant ${participantId} not found`);
-    
+
     this._participants.set(participantId, {
       ...participant,
       status,
@@ -67,7 +73,9 @@ export class InMemoryParticipantRepository implements ParticipantRepository {
   }
 
   getOnlineParticipants(): readonly Participant[] {
-    return this.participants.filter(p => p.status === "online" || p.status === "busy");
+    return this.participants.filter(
+      (p) => p.status === "online" || p.status === "busy",
+    );
   }
 
   subscribe(callback: () => void): () => void {

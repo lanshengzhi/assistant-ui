@@ -24,6 +24,7 @@ export const MessagePrimitiveReply = forwardRef<
   return (
     <Primitive.div {...props} ref={ref}>
       <button
+        type="button"
         className="aui-reply-button"
         onClick={onShowReplies}
       >

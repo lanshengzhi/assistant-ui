@@ -29,6 +29,7 @@ export const MessagePrimitiveReactions = forwardRef<
     <Primitive.div {...props} ref={ref}>
       {reactions.map((reaction) => (
         <button
+          type="button"
           key={reaction.emoji}
           className="aui-reaction"
           onClick={() => onRemoveReaction?.(reaction.emoji)}

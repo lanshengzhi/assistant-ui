@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 
 export type SpaceSettingsProps = {
   name: string;
@@ -8,9 +8,15 @@ export type SpaceSettingsProps = {
   onUpdate: (settings: { name: string; description: string }) => void;
 };
 
-export function SpaceSettings({ name, description = "", onUpdate }: SpaceSettingsProps) {
+export function SpaceSettings({
+  name,
+  description = "",
+  onUpdate,
+}: SpaceSettingsProps) {
   const [formName, setFormName] = useState(name);
   const [formDescription, setFormDescription] = useState(description);
+  const nameId = useId();
+  const descId = useId();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,9 +26,9 @@ export function SpaceSettings({ name, description = "", onUpdate }: SpaceSetting
   return (
     <form onSubmit={handleSubmit} className="aui-space-settings">
       <div className="aui-form-group">
-        <label htmlFor="space-name">Space Name</label>
+        <label htmlFor={nameId}>Space Name</label>
         <input
-          id="space-name"
+          id={nameId}
           type="text"
           value={formName}
           onChange={(e) => setFormName(e.target.value)}
@@ -31,16 +37,18 @@ export function SpaceSettings({ name, description = "", onUpdate }: SpaceSetting
       </div>
 
       <div className="aui-form-group">
-        <label htmlFor="space-description">Description</label>
+        <label htmlFor={descId}>Description</label>
         <textarea
-          id="space-description"
+          id={descId}
           value={formDescription}
           onChange={(e) => setFormDescription(e.target.value)}
           rows={3}
         />
       </div>
 
-      <button type="submit" className="aui-btn-primary">Save Changes</button>
+      <button type="submit" className="aui-btn-primary">
+        Save Changes
+      </button>
     </form>
   );
 }

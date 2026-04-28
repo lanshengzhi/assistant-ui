@@ -6,25 +6,28 @@ export type SpaceRuntimeCore = {
   readonly space: Space | null;
   readonly participants: readonly Participant[];
   readonly isLoading: boolean;
-  
+
   // Space CRUD
   create(name: string, description?: string): Space;
   load(spaceId: string): Promise<void>;
   rename(name: string): void;
   setDescription(description: string): void;
-  
+
   // Channel management
   createChannel(name: string, description?: string): Channel;
   archiveChannel(channelId: string): void;
   renameChannel(channelId: string, name: string): void;
   getChannel(channelId: string): Channel | undefined;
-  
+
   // Participant management
   addParticipant(participant: Omit<Participant, "joinedAt">): Participant;
   removeParticipant(participantId: string): void;
-  updateParticipantStatus(participantId: string, status: Participant["status"]): void;
+  updateParticipantStatus(
+    participantId: string,
+    status: Participant["status"],
+  ): void;
   getParticipant(participantId: string): Participant | undefined;
-  
+
   // Subscriptions
   subscribe(callback: () => void): () => void;
 };
@@ -64,7 +67,7 @@ export class LocalSpaceRuntimeCore implements SpaceRuntimeCore {
   async load(spaceId: string): Promise<void> {
     this._isLoading = true;
     this._notify();
-    
+
     // TODO: Load from adapter/storage
     this._isLoading = false;
     this._notify();
@@ -92,9 +95,9 @@ export class LocalSpaceRuntimeCore implements SpaceRuntimeCore {
 
   createChannel(name: string, description?: string): Channel {
     if (!this._space) throw new Error("Space not initialized");
-    
+
     // Check for duplicate names
-    if (this._space.channels.some(c => c.name === name)) {
+    if (this._space.channels.some((c) => c.name === name)) {
       throw new Error(`Channel "${name}" already exists`);
     }
 
@@ -117,14 +120,14 @@ export class LocalSpaceRuntimeCore implements SpaceRuntimeCore {
 
   archiveChannel(channelId: string): void {
     if (!this._space) throw new Error("Space not initialized");
-    
-    const channel = this._space.channels.find(c => c.id === channelId);
+
+    const channel = this._space.channels.find((c) => c.id === channelId);
     if (!channel) throw new Error(`Channel ${channelId} not found`);
 
     this._space = {
       ...this._space,
-      channels: this._space.channels.map(c =>
-        c.id === channelId ? { ...c, archived: true } : c
+      channels: this._space.channels.map((c) =>
+        c.id === channelId ? { ...c, archived: true } : c,
       ),
       updatedAt: new Date(),
     };
@@ -136,8 +139,8 @@ export class LocalSpaceRuntimeCore implements SpaceRuntimeCore {
 
     this._space = {
       ...this._space,
-      channels: this._space.channels.map(c =>
-        c.id === channelId ? { ...c, name } : c
+      channels: this._space.channels.map((c) =>
+        c.id === channelId ? { ...c, name } : c,
       ),
       updatedAt: new Date(),
     };
@@ -145,12 +148,12 @@ export class LocalSpaceRuntimeCore implements SpaceRuntimeCore {
   }
 
   getChannel(channelId: string): Channel | undefined {
-    return this._space?.channels.find(c => c.id === channelId);
+    return this._space?.channels.find((c) => c.id === channelId);
   }
 
   addParticipant(participant: Omit<Participant, "joinedAt">): Participant {
     if (!this._space) throw new Error("Space not initialized");
-    
+
     const newParticipant: Participant = {
       ...participant,
       joinedAt: new Date(),
@@ -162,19 +165,24 @@ export class LocalSpaceRuntimeCore implements SpaceRuntimeCore {
   }
 
   removeParticipant(participantId: string): void {
-    this._participants = this._participants.filter(p => p.id !== participantId);
+    this._participants = this._participants.filter(
+      (p) => p.id !== participantId,
+    );
     this._notify();
   }
 
-  updateParticipantStatus(participantId: string, status: Participant["status"]): void {
-    this._participants = this._participants.map(p =>
-      p.id === participantId ? { ...p, status } : p
+  updateParticipantStatus(
+    participantId: string,
+    status: Participant["status"],
+  ): void {
+    this._participants = this._participants.map((p) =>
+      p.id === participantId ? { ...p, status } : p,
     );
     this._notify();
   }
 
   getParticipant(participantId: string): Participant | undefined {
-    return this._participants.find(p => p.id === participantId);
+    return this._participants.find((p) => p.id === participantId);
   }
 
   subscribe(callback: () => void): () => void {

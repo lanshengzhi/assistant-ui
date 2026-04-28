@@ -8,14 +8,15 @@ import {
   createContext,
   useContext,
 } from "react";
-import type { Channel } from "@assistant-ui/core";
 
 const SpaceContext = createContext<{ spaceId?: string } | null>(null);
 
 export const useSpaceContext = () => {
   const context = useContext(SpaceContext);
   if (!context) {
-    throw new Error("Space components must be used within a SpacePrimitive.Root");
+    throw new Error(
+      "Space components must be used within a SpacePrimitive.Root",
+    );
   }
   return context;
 };

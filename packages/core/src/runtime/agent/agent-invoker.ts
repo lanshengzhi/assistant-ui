@@ -8,11 +8,20 @@ import type { Participant } from "../../types/participant";
 
 export type AgentInvokerOptions = {
   registry: AgentRegistry;
-  createClient: (config: { port: number; authToken?: string }) => CLIDaemonClient;
+  createClient: (config: {
+    port: number;
+    authToken?: string;
+  }) => CLIDaemonClient;
   onMessage: (message: { participantId: string; content: string }) => void;
-  onThinkingStep: (participantId: string, step: { id: string; message: string; timestamp: number }) => void;
+  onThinkingStep: (
+    participantId: string,
+    step: { id: string; message: string; timestamp: number },
+  ) => void;
   onError: (error: { participantId: string; message: string }) => void;
-  onStatusChange: (participantId: string, status: Participant["status"]) => void;
+  onStatusChange: (
+    participantId: string,
+    status: Participant["status"],
+  ) => void;
 };
 
 export class AgentInvoker {
@@ -28,7 +37,7 @@ export class AgentInvoker {
    */
   async invoke(
     agentId: string,
-    request: Omit<AgentInvocationRequest, "agentId">
+    request: Omit<AgentInvocationRequest, "agentId">,
   ): Promise<void> {
     const agent = this._options.registry.get(agentId);
     if (!agent) {
@@ -58,7 +67,11 @@ export class AgentInvoker {
     };
 
     let messageContent = "";
-    const thinkingSteps: Array<{ id: string; message: string; timestamp: number }> = [];
+    const thinkingSteps: Array<{
+      id: string;
+      message: string;
+      timestamp: number;
+    }> = [];
 
     try {
       await client.invoke(fullRequest, {

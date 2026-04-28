@@ -6,18 +6,18 @@ export type ChannelRuntimeCore = {
   readonly channel: Channel | null;
   readonly threadIds: readonly string[];
   readonly isLoading: boolean;
-  
+
   // Channel operations
   load(channelId: string): Promise<void>;
   archive(): void;
   rename(name: string): void;
   setDescription(description: string): void;
-  
+
   // Thread management
   createThread(title?: string): string;
   getThread(threadId: string): { id: string; title?: string } | undefined;
   selectThread(threadId: string): void;
-  
+
   // Subscriptions
   subscribe(callback: () => void): () => void;
 };
@@ -43,7 +43,7 @@ export class LocalChannelRuntimeCore implements ChannelRuntimeCore {
   async load(channelId: string): Promise<void> {
     this._isLoading = true;
     this._notify();
-    
+
     // TODO: Load from adapter/storage
     this._isLoading = false;
     this._notify();
@@ -78,7 +78,7 @@ export class LocalChannelRuntimeCore implements ChannelRuntimeCore {
 
   createThread(title?: string): string {
     if (!this._channel) throw new Error("Channel not initialized");
-    
+
     const threadId = generateId();
     this._threadIds = [...this._threadIds, threadId];
     this._notify();

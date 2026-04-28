@@ -51,4 +51,7 @@ export type SystemParticipant = ParticipantBase & {
   readonly role: "system";
 };
 
-export type Participant = HumanParticipant | AgentParticipant | SystemParticipant;
+export type Participant =
+  | HumanParticipant
+  | AgentParticipant
+  | SystemParticipant;

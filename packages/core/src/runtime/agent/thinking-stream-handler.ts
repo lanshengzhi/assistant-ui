@@ -6,9 +6,15 @@ export type ThinkingStreamHandlerOptions = {
   /** Maximum number of thinking steps to keep (default: 50) */
   maxSteps?: number;
   /** Called when thinking steps change */
-  onStepsChange?: (participantId: string, steps: readonly ThinkingStep[]) => void;
+  onStepsChange?: (
+    participantId: string,
+    steps: readonly ThinkingStep[],
+  ) => void;
   /** Called when agent status changes */
-  onStatusChange?: (participantId: string, status: "online" | "busy" | "offline") => void;
+  onStatusChange?: (
+    participantId: string,
+    status: "online" | "busy" | "offline",
+  ) => void;
 };
 
 export class ThinkingStreamHandler {
@@ -37,7 +43,7 @@ export class ThinkingStreamHandler {
    */
   addStep(
     participantId: string,
-    step: Omit<ThinkingStep, "id"> & { id?: string }
+    step: Omit<ThinkingStep, "id"> & { id?: string },
   ): void {
     const steps = this._thinkingSteps.get(participantId) || [];
     const newStep: ThinkingStep = {

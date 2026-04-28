@@ -22,8 +22,19 @@ export const MessagePrimitiveAuthor = forwardRef<
   MessagePrimitiveAuthor.Props
 >(({ participantId, displayName, avatar, status, ...props }, ref) => {
   return (
-    <Primitive.div {...props} ref={ref} data-participant-id={participantId} data-status={status}>
-      {avatar && <img src={avatar} alt={displayName || participantId} className="aui-author-avatar" />}
+    <Primitive.div
+      {...props}
+      ref={ref}
+      data-participant-id={participantId}
+      data-status={status}
+    >
+      {avatar && (
+        <img
+          src={avatar}
+          alt={displayName || participantId}
+          className="aui-author-avatar"
+        />
+      )}
       <span className="aui-author-name">{displayName || participantId}</span>
       {status && <span className={`aui-author-status aui-status-${status}`} />}
     </Primitive.div>

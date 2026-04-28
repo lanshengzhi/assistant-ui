@@ -58,7 +58,9 @@ export class PresenceManager {
    */
   getOnlineParticipants(): string[] {
     return Array.from(this._presence.entries())
-      .filter(([_, state]) => state.status === "online" || state.status === "busy")
+      .filter(
+        ([_, state]) => state.status === "online" || state.status === "busy",
+      )
       .map(([id]) => id);
   }
 
@@ -102,7 +104,13 @@ export class PresenceManager {
   /**
    * Sync presence state from server.
    */
-  sync(participants: Array<{ participantId: string; status: PresenceStatus; lastSeen: number }>): void {
+  sync(
+    participants: Array<{
+      participantId: string;
+      status: PresenceStatus;
+      lastSeen: number;
+    }>,
+  ): void {
     for (const p of participants) {
       this._presence.set(p.participantId, {
         status: p.status,

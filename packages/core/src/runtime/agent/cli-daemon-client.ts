@@ -21,11 +21,15 @@ export type CLIDaemonClient = {
   invoke(
     request: AgentInvocationRequest,
     callbacks: {
-      onThinkingStep: (step: { id: string; message: string; timestamp: number }) => void;
+      onThinkingStep: (step: {
+        id: string;
+        message: string;
+        timestamp: number;
+      }) => void;
       onMessage: (content: string) => void;
       onComplete: () => void;
       onError: (error: Error) => void;
-    }
+    },
   ): Promise<void>;
   /** Cancel ongoing invocation */
   cancel(): void;
@@ -66,11 +70,15 @@ export class HttpCLIDaemonClient implements CLIDaemonClient {
   async invoke(
     request: AgentInvocationRequest,
     callbacks: {
-      onThinkingStep: (step: { id: string; message: string; timestamp: number }) => void;
+      onThinkingStep: (step: {
+        id: string;
+        message: string;
+        timestamp: number;
+      }) => void;
       onMessage: (content: string) => void;
       onComplete: () => void;
       onError: (error: Error) => void;
-    }
+    },
   ): Promise<void> {
     this._abortController = new AbortController();
     const timeoutId = setTimeout(() => {
@@ -89,7 +97,9 @@ export class HttpCLIDaemonClient implements CLIDaemonClient {
       });
 
       if (!response.ok) {
-        throw new Error(`Agent invocation failed: ${response.status} ${response.statusText}`);
+        throw new Error(
+          `Agent invocation failed: ${response.status} ${response.statusText}`,
+        );
       }
 
       const reader = response.body?.getReader();
@@ -128,7 +138,9 @@ export class HttpCLIDaemonClient implements CLIDaemonClient {
       if (error instanceof Error && error.name === "AbortError") {
         callbacks.onError(new Error("Agent invocation was cancelled"));
       } else {
-        callbacks.onError(error instanceof Error ? error : new Error(String(error)));
+        callbacks.onError(
+          error instanceof Error ? error : new Error(String(error)),
+        );
       }
     }
   }
@@ -150,11 +162,15 @@ export class HttpCLIDaemonClient implements CLIDaemonClient {
   private _handleEvent(
     event: AgentStreamEvent,
     callbacks: {
-      onThinkingStep: (step: { id: string; message: string; timestamp: number }) => void;
+      onThinkingStep: (step: {
+        id: string;
+        message: string;
+        timestamp: number;
+      }) => void;
       onMessage: (content: string) => void;
       onComplete: () => void;
       onError: (error: Error) => void;
-    }
+    },
   ): void {
     switch (event.type) {
       case "thinking-step":

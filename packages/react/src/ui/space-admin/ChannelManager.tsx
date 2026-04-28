@@ -10,7 +10,12 @@ export type ChannelManagerProps = {
   onRename: (channelId: string, name: string) => void;
 };
 
-export function ChannelManager({ channels, onCreate, onArchive, onRename }: ChannelManagerProps) {
+export function ChannelManager({
+  channels,
+  onCreate,
+  onArchive,
+  onRename,
+}: ChannelManagerProps) {
   const [newName, setNewName] = useState("");
   const [newDescription, setNewDescription] = useState("");
   const [error, setError] = useState("");
@@ -52,18 +57,24 @@ export function ChannelManager({ channels, onCreate, onArchive, onRename }: Chan
             value={newDescription}
             onChange={(e) => setNewDescription(e.target.value)}
           />
-          <button type="submit" className="aui-btn-primary">Create</button>
+          <button type="submit" className="aui-btn-primary">
+            Create
+          </button>
         </div>
         {error && <p className="aui-error">{error}</p>}
       </form>
 
       <ul className="aui-channel-list">
         {channels.map((channel) => (
-          <li key={channel.id} className={channel.archived ? "aui-archived" : ""}>
+          <li
+            key={channel.id}
+            className={channel.archived ? "aui-archived" : ""}
+          >
             <span>#{channel.name}</span>
             {!channel.archived && (
               <>
                 <button
+                  type="button"
                   onClick={() => {
                     const name = prompt("New name:", channel.name);
                     if (name) onRename(channel.id, name);
@@ -71,7 +82,7 @@ export function ChannelManager({ channels, onCreate, onArchive, onRename }: Chan
                 >
                   Rename
                 </button>
-                <button onClick={() => onArchive(channel.id)}>
+                <button type="button" onClick={() => onArchive(channel.id)}>
                   Archive
                 </button>
               </>

@@ -34,10 +34,13 @@ export class AgentOrchestrator {
   async handleAgentResponse(
     threadId: string,
     agentId: string,
-    response: string
+    response: string,
   ): Promise<void> {
     // Parse mentions from response
-    const { mentions } = parseMentions(response, this._options.verifyParticipant);
+    const { mentions } = parseMentions(
+      response,
+      this._options.verifyParticipant,
+    );
     const verifiedMentions = mentions.filter((m) => m.verified);
 
     if (verifiedMentions.length === 0) return;
@@ -48,7 +51,7 @@ export class AgentOrchestrator {
       this._onSystemMessage(
         threadId,
         `⚠️ Maximum agent invocation depth (${this._options.maxDepth}) reached. ` +
-          `Chained invocations stopped to prevent infinite loops.`
+          `Chained invocations stopped to prevent infinite loops.`,
       );
       return;
     }
@@ -58,7 +61,7 @@ export class AgentOrchestrator {
       this._onSystemMessage(
         threadId,
         `⚠️ Rate limit exceeded (${this._options.maxInvocationsPerMinute} invocations/minute). ` +
-          `Please wait before invoking more agents.`
+          `Please wait before invoking more agents.`,
       );
       return;
     }
@@ -97,7 +100,7 @@ export class AgentOrchestrator {
         error instanceof Error ? error.message : String(error);
       this._onSystemMessage(
         threadId,
-        `❌ Agent chain aborted: ${errorMessage}`
+        `❌ Agent chain aborted: ${errorMessage}`,
       );
       throw error;
     }

@@ -1,4 +1,7 @@
-import type { AgentParticipant, AgentCapabilities } from "../../types/participant";
+import type {
+  AgentParticipant,
+  AgentCapabilities,
+} from "../../types/participant";
 
 export type AgentConfig = {
   participantId: string;
@@ -16,24 +19,27 @@ export type AgentConfig = {
 
 export type AgentRegistry = {
   readonly agents: readonly AgentConfig[];
-  
+
   /** Register a new agent */
   register(config: AgentConfig): void;
-  
+
   /** Unregister an agent */
   unregister(participantId: string): void;
-  
+
   /** Get agent config by participant ID */
   get(participantId: string): AgentConfig | undefined;
-  
+
   /** Check if participant is a registered agent */
   has(participantId: string): boolean;
-  
+
   /** Get all registered agents */
   getAll(): readonly AgentConfig[];
-  
+
   /** Update agent config */
-  update(participantId: string, updates: Partial<Omit<AgentConfig, "participantId">>): void;
+  update(
+    participantId: string,
+    updates: Partial<Omit<AgentConfig, "participantId">>,
+  ): void;
 };
 
 export class InMemoryAgentRegistry implements AgentRegistry {
@@ -63,10 +69,13 @@ export class InMemoryAgentRegistry implements AgentRegistry {
     return this.agents;
   }
 
-  update(participantId: string, updates: Partial<Omit<AgentConfig, "participantId">>): void {
+  update(
+    participantId: string,
+    updates: Partial<Omit<AgentConfig, "participantId">>,
+  ): void {
     const agent = this._agents.get(participantId);
     if (!agent) throw new Error(`Agent ${participantId} not found`);
-    
+
     this._agents.set(participantId, {
       ...agent,
       ...updates,

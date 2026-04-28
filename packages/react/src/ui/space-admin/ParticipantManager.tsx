@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import type { Participant } from "@assistant-ui/core";
 
 export type ParticipantManagerProps = {
@@ -38,15 +39,21 @@ export function ParticipantManager({
             onChange={(e) => setEmail(e.target.value)}
             required
           />
-          <button type="submit" className="aui-btn-primary">Invite</button>
+          <button type="submit" className="aui-btn-primary">
+            Invite
+          </button>
         </div>
       </form>
 
       <ul className="aui-participant-list">
         {participants.map((participant) => (
           <li key={participant.id} className={`aui-role-${participant.role}`}>
-            <span className="aui-participant-name">{participant.displayName}</span>
-            <span className={`aui-status-badge aui-status-${participant.status}`}>
+            <span className="aui-participant-name">
+              {participant.displayName}
+            </span>
+            <span
+              className={`aui-status-badge aui-status-${participant.status}`}
+            >
               {participant.status}
             </span>
             <span className="aui-role-badge">{participant.role}</span>
@@ -55,7 +62,10 @@ export function ParticipantManager({
               <select
                 value={participant.role}
                 onChange={(e) =>
-                  onSetRole(participant.id, e.target.value as Participant["role"])
+                  onSetRole(
+                    participant.id,
+                    e.target.value as Participant["role"],
+                  )
                 }
               >
                 <option value="human">Member</option>
@@ -63,7 +73,9 @@ export function ParticipantManager({
               </select>
             )}
 
-            <button onClick={() => onRemove(participant.id)}>Remove</button>
+            <button type="button" onClick={() => onRemove(participant.id)}>
+              Remove
+            </button>
           </li>
         ))}
       </ul>

@@ -36,7 +36,9 @@ export const ParticipantPrimitiveAvatar = forwardRef<
           {displayName.charAt(0).toUpperCase()}
         </div>
       )}
-      {status && <span className={`aui-status-indicator aui-status-${status}`} />}
+      {status && (
+        <span className={`aui-status-indicator aui-status-${status}`} />
+      )}
     </Primitive.div>
   );
 });

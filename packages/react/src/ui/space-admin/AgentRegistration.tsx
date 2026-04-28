@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 
 export type AgentRegistrationProps = {
   onRegister: (agent: {
@@ -17,6 +17,10 @@ export function AgentRegistration({ onRegister }: AgentRegistrationProps) {
   const [port, setPort] = useState(8080);
   const [authToken, setAuthToken] = useState("");
   const [error, setError] = useState("");
+  const nameId = useId();
+  const capsId = useId();
+  const portId = useId();
+  const tokenId = useId();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,7 +38,10 @@ export function AgentRegistration({ onRegister }: AgentRegistrationProps) {
 
     onRegister({
       displayName: displayName.trim(),
-      capabilities: capabilities.split(",").map((c) => c.trim()).filter(Boolean),
+      capabilities: capabilities
+        .split(",")
+        .map((c) => c.trim())
+        .filter(Boolean),
       port,
       authToken: authToken.trim() || undefined,
     });
@@ -52,9 +59,9 @@ export function AgentRegistration({ onRegister }: AgentRegistrationProps) {
       {error && <p className="aui-error">{error}</p>}
 
       <div className="aui-form-group">
-        <label htmlFor="agent-name">Display Name</label>
+        <label htmlFor={nameId}>Display Name</label>
         <input
-          id="agent-name"
+          id={nameId}
           type="text"
           value={displayName}
           onChange={(e) => setDisplayName(e.target.value)}
@@ -64,9 +71,9 @@ export function AgentRegistration({ onRegister }: AgentRegistrationProps) {
       </div>
 
       <div className="aui-form-group">
-        <label htmlFor="agent-capabilities">Capabilities (comma-separated)</label>
+        <label htmlFor={capsId}>Capabilities (comma-separated)</label>
         <input
-          id="agent-capabilities"
+          id={capsId}
           type="text"
           value={capabilities}
           onChange={(e) => setCapabilities(e.target.value)}
@@ -75,9 +82,9 @@ export function AgentRegistration({ onRegister }: AgentRegistrationProps) {
       </div>
 
       <div className="aui-form-group">
-        <label htmlFor="agent-port">Daemon Port</label>
+        <label htmlFor={portId}>Daemon Port</label>
         <input
-          id="agent-port"
+          id={portId}
           type="number"
           value={port}
           onChange={(e) => setPort(Number(e.target.value))}
@@ -88,9 +95,9 @@ export function AgentRegistration({ onRegister }: AgentRegistrationProps) {
       </div>
 
       <div className="aui-form-group">
-        <label htmlFor="agent-token">Auth Token (optional)</label>
+        <label htmlFor={tokenId}>Auth Token (optional)</label>
         <input
-          id="agent-token"
+          id={tokenId}
           type="password"
           value={authToken}
           onChange={(e) => setAuthToken(e.target.value)}
@@ -98,7 +105,9 @@ export function AgentRegistration({ onRegister }: AgentRegistrationProps) {
         />
       </div>
 
-      <button type="submit" className="aui-btn-primary">Register Agent</button>
+      <button type="submit" className="aui-btn-primary">
+        Register Agent
+      </button>
     </form>
   );
 }

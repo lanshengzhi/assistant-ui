@@ -23,34 +23,40 @@ export class MultiParticipantMessageRepository {
    * @param parentId The parent message ID (for threading)
    * @param message The message to add/update
    */
-  addOrUpdateMessage(parentId: string | null, message: SpaceThreadMessage): void {
+  addOrUpdateMessage(
+    parentId: string | null,
+    message: SpaceThreadMessage,
+  ): void {
     const existing = this._messages.get(message.id);
-    
+
     // Store message
     this._messages.set(message.id, message);
-    
+
     // Store parent relationship
     this._parentMap.set(message.id, parentId);
-    
+
     // Update children map
     if (parentId !== null) {
       const children = this._childrenMap.get(parentId) || new Set();
       children.add(message.id);
       this._childrenMap.set(parentId, children);
     }
-    
+
     // Set head to the new message
     if (!existing) {
       this._headId = message.id;
     }
-    
+
     this._notify();
   }
 
   /**
    * Get a message by ID.
    */
-  getMessage(messageId: string): { message: SpaceThreadMessage; parentId: string | null } {
+  getMessage(messageId: string): {
+    message: SpaceThreadMessage;
+    parentId: string | null;
+  } {
     const message = this._messages.get(messageId);
     if (!message) throw new Error(`Message ${messageId} not found`);
     return {
@@ -64,7 +70,7 @@ export class MultiParticipantMessageRepository {
    */
   getMessages(): readonly SpaceThreadMessage[] {
     return Array.from(this._messages.values()).sort(
-      (a, b) => a.createdAt.getTime() - b.createdAt.getTime()
+      (a, b) => a.createdAt.getTime() - b.createdAt.getTime(),
     );
   }
 
@@ -74,14 +80,14 @@ export class MultiParticipantMessageRepository {
   getMessagesFromBranch(headId: string): readonly SpaceThreadMessage[] {
     const result: SpaceThreadMessage[] = [];
     let currentId: string | null = headId;
-    
+
     while (currentId !== null) {
       const message = this._messages.get(currentId);
       if (!message) break;
       result.unshift(message);
       currentId = this._parentMap.get(currentId) ?? null;
     }
-    
+
     return result;
   }
 
@@ -91,9 +97,9 @@ export class MultiParticipantMessageRepository {
   getChildren(messageId: string): readonly SpaceThreadMessage[] {
     const childrenIds = this._childrenMap.get(messageId);
     if (!childrenIds) return [];
-    
+
     return Array.from(childrenIds)
-      .map(id => this._messages.get(id))
+      .map((id) => this._messages.get(id))
       .filter((m): m is SpaceThreadMessage => m !== undefined)
       .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
   }
@@ -116,8 +122,10 @@ export class MultiParticipantMessageRepository {
   /**
    * Get all messages by a participant.
    */
-  getMessagesByParticipant(participantId: string): readonly SpaceThreadMessage[] {
-    return this.getMessages().filter(m => m.participantId === participantId);
+  getMessagesByParticipant(
+    participantId: string,
+  ): readonly SpaceThreadMessage[] {
+    return this.getMessages().filter((m) => m.participantId === participantId);
   }
 
   /**
@@ -140,18 +148,18 @@ export class MultiParticipantMessageRepository {
     this._messages.clear();
     this._parentMap.clear();
     this._childrenMap.clear();
-    
+
     for (const item of data.messages) {
       this._messages.set(item.message.id, item.message);
       this._parentMap.set(item.message.id, item.parentId);
-      
+
       if (item.parentId !== null) {
         const children = this._childrenMap.get(item.parentId) || new Set();
         children.add(item.message.id);
         this._childrenMap.set(item.parentId, children);
       }
     }
-    
+
     this._headId = data.headId ?? null;
     this._notify();
   }
@@ -161,7 +169,7 @@ export class MultiParticipantMessageRepository {
    */
   hasParticipant(participantId: string): boolean {
     return Array.from(this._messages.values()).some(
-      m => m.participantId === participantId
+      (m) => m.participantId === participantId,
     );
   }
 

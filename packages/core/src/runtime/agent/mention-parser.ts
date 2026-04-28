@@ -14,11 +14,11 @@ export type ParseMentionsResult = {
 
 /**
  * Parse @mentions from message content.
- * 
+ *
  * Supported syntax:
  * - @AgentName - mention by name/id
  * - @"Full Name" - mention with quoted name
- * 
+ *
  * Does NOT match:
  * - Escaped: \@AgentName
  * - Email addresses: user@example.com
@@ -26,10 +26,10 @@ export type ParseMentionsResult = {
  */
 export function parseMentions(
   content: string,
-  verifyParticipant: (id: string) => boolean
+  verifyParticipant: (id: string) => boolean,
 ): ParseMentionsResult {
   const mentions: Mention[] = [];
-  
+
   // Match @mentions, but not escaped or email addresses
   // Pattern breakdown:
   // (?<!\\) - negative lookbehind: not preceded by backslash
@@ -37,23 +37,26 @@ export function parseMentions(
   // @ - literal @
   // ("([^"]+)"|[\w-]+) - quoted string OR word characters/hyphens
   const mentionRegex = /(?<!\\)(?<!\w)@(?:"([^"]+)"|([\w-]+))/g;
-  
-  let match;
-  while ((match = mentionRegex.exec(content)) !== null) {
-    const [fullMatch, quotedName, unquotedName] = match;
+
+  let match: RegExpExecArray | null = null;
+  while (true) {
+    match = mentionRegex.exec(content);
+    if (match === null) break;
+
+    const [_fullMatch, quotedName, unquotedName] = match;
     const participantId = quotedName || unquotedName || "";
     const position = match.index;
-    
+
     // Skip if this looks like an email (contains @ before this position)
     const beforeMatch = content.slice(0, position);
     const emailRegex = /[\w.-]+@[\w.-]+$/;
     if (emailRegex.test(beforeMatch)) {
       continue;
     }
-    
+
     // Verify participant exists
     const verified = verifyParticipant(participantId);
-    
+
     mentions.push({
       participantId,
       displayName: quotedName || unquotedName || participantId,
@@ -61,14 +64,16 @@ export function parseMentions(
       verified,
     });
   }
-  
+
   // Remove mentions from text for cleaner processing
   let text = content;
   for (let i = mentions.length - 1; i >= 0; i--) {
     const m = mentions[i];
-    text = text.slice(0, m.position) + text.slice(m.position + m.displayName.length + 1);
+    text =
+      text.slice(0, m.position) +
+      text.slice(m.position + m.displayName.length + 1);
   }
-  
+
   return { mentions, text: text.trim() };
 }
 
@@ -77,10 +82,10 @@ export function parseMentions(
  */
 export function getVerifiedMentions(
   content: string,
-  verifyParticipant: (id: string) => boolean
+  verifyParticipant: (id: string) => boolean,
 ): Mention[] {
   const { mentions } = parseMentions(content, verifyParticipant);
-  return mentions.filter(m => m.verified);
+  return mentions.filter((m) => m.verified);
 }
 
 /**
