@@ -2,6 +2,14 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { LocalSpaceRuntimeCore } from "../runtime/space-runtime-core";
 import type { HumanParticipant, AgentParticipant } from "../types/participant";
 
+// Mock generateId to make tests deterministic
+let mockIdCounter = 0;
+vi.mock("../../utils/id", () => ({
+  generateId: () => `test-id-${++mockIdCounter}`,
+  generateOptimisticId: () => `__optimistic__test-id-${++mockIdCounter}`,
+  isOptimisticId: (id: string) => id.startsWith("__optimistic__"),
+}));
+
 describe("LocalSpaceRuntimeCore", () => {
   let runtime: LocalSpaceRuntimeCore;
 
@@ -15,7 +23,7 @@ describe("LocalSpaceRuntimeCore", () => {
       expect(space.name).toBe("My Space");
       expect(space.id).toBeDefined();
       expect(space.channels).toHaveLength(0);
-      expect(space.participants).toHaveLength(0);
+      expect(runtime.participants).toHaveLength(0);
     });
 
     it("should create space with description", () => {
