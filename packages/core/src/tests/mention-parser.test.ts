@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import {
   parseMentions,
   getVerifiedMentions,
@@ -87,6 +87,18 @@ describe("parseMentions", () => {
       const result = parseMentions("@my-agent help", verifyParticipant);
       expect(result.mentions).toHaveLength(1);
       expect(result.mentions[0].participantId).toBe("my-agent");
+    });
+
+    it("should reject content exceeding max length", () => {
+      const longContent = "a".repeat(100_001);
+      const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const result = parseMentions(longContent, verifyParticipant);
+      expect(result.mentions).toHaveLength(0);
+      expect(result.text).toBe(longContent);
+      expect(consoleSpy).toHaveBeenCalledWith(
+        expect.stringContaining("exceeds max length"),
+      );
+      consoleSpy.mockRestore();
     });
   });
 

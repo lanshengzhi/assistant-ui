@@ -152,4 +152,48 @@ describe("MultiParticipantMessageRepository", () => {
       );
     });
   });
+
+  describe("concurrent safety", () => {
+    it("should handle reentrant updates via subscriptions", () => {
+      let callCount = 0;
+      repository.subscribe(() => {
+        callCount++;
+        // Simulate reentrant call from subscription handler
+        if (callCount === 1) {
+          repository.addOrUpdateMessage(null, createMessage("msg-2", "bob"));
+        }
+      });
+
+      repository.addOrUpdateMessage(null, createMessage("msg-1", "alice"));
+
+      // Both messages should be present despite reentrant call
+      expect(repository.getMessages()).toHaveLength(2);
+      expect(callCount).toBe(2); // Two notifications: msg-1 and msg-2
+    });
+
+    it("should queue multiple reentrant updates", () => {
+      const ids: string[] = [];
+      repository.subscribe(() => {
+        const messages = repository.getMessages();
+        if (messages.length > 0) {
+          const lastId = messages[messages.length - 1].id;
+          if (!ids.includes(lastId)) {
+            ids.push(lastId);
+            // Trigger another reentrant call
+            if (ids.length < 3) {
+              repository.addOrUpdateMessage(
+                null,
+                createMessage(`msg-${ids.length + 1}`, "charlie"),
+              );
+            }
+          }
+        }
+      });
+
+      repository.addOrUpdateMessage(null, createMessage("msg-1", "alice"));
+
+      expect(repository.getMessages()).toHaveLength(3);
+      expect(ids).toEqual(["msg-1", "msg-2", "msg-3"]);
+    });
+  });
 });
