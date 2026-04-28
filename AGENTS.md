@@ -32,3 +32,16 @@ feat: description of the change
 `@assistant-ui/ui` contains shadcn-style components that get copied into user projects. We use them directly in the monorepo to avoid duplication.
 
 There is an ongoing migration from the legacy runtime architecture to a tap-only architecture.
+
+## Git Workflow (Fork-based)
+
+This repo is a fork of `assistant-ui`. Follow these rules to keep history clean and avoid polluting upstream:
+
+- **Do NOT commit to `main`** — `main` is reserved for syncing with upstream only. Keep it clean.
+- **Do NOT open Pull Requests to upstream** — All work stays in this fork.
+- **Do all work on `feat/collaborative-space`** — This is the permanent feature branch for the collaborative space work. Commit directly to it.
+- **Commit & push to fork** — When the user says "commit", "push", or "save changes":
+  1. Commit to `feat/collaborative-space`
+  2. Push to the fork remote (`origin`)
+  3. Do NOT merge into `main`
+- **No PR creation** — Unless explicitly asked by the user, do not create pull requests (either to upstream or within the fork).
