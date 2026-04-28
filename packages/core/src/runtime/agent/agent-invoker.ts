@@ -9,7 +9,7 @@ export type AgentInvokerOptions = {
   registry: AgentRegistry;
   createClient: (config: {
     port: number;
-    authToken?: string;
+    authToken?: string | undefined;
   }) => CLIDaemonClient;
   onMessage: (message: { participantId: string; content: string }) => void;
   onThinkingStep: (
@@ -56,7 +56,7 @@ export class AgentInvoker {
     // Create client
     const client = this._options.createClient({
       port: agent.daemonPort,
-      authToken: agent.authToken,
+      authToken: agent.authToken ?? undefined,
     });
     this._activeInvocations.set(agentId, client);
 

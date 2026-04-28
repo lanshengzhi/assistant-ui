@@ -21,7 +21,9 @@ export class MultiParticipantMessageRepository {
   private _childrenMap = new Map<string, Set<string>>();
   private _headId: string | null = null;
   private _subscriptions = new Set<() => void>();
-  private _validateParticipant?: (participantId: string) => boolean;
+  private _validateParticipant?:
+    | ((participantId: string) => boolean)
+    | undefined;
   private _pendingUpdates: Array<{
     parentId: string | null;
     message: SpaceThreadMessage;
@@ -29,7 +31,7 @@ export class MultiParticipantMessageRepository {
   private _isProcessing = false;
 
   constructor(options: MultiParticipantMessageRepositoryOptions = {}) {
-    this._validateParticipant = options.validateParticipant;
+    this._validateParticipant = options.validateParticipant ?? undefined;
   }
 
   /**

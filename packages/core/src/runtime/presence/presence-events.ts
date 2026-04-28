@@ -1,6 +1,6 @@
 /** Presence tracking types */
 
-export type PresenceStatus = "online" | "away" | "offline";
+export type PresenceStatus = "online" | "away" | "offline" | "busy";
 
 export type PresenceEvent = {
   type: "presence-update";

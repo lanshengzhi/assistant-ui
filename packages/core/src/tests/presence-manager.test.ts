@@ -94,6 +94,7 @@ describe("PresenceManager", () => {
 
       // Add participant back via applyEvent
       manager.applyEvent({
+        type: "presence-update",
         participantId: "user-2",
         status: "online",
         timestamp: startTime,

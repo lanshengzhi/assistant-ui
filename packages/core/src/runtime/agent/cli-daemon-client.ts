@@ -8,7 +8,7 @@ import type {
 
 export type CLIDaemonClientOptions = {
   port: number;
-  authToken?: string;
+  authToken?: string | undefined;
   timeout?: number;
   baseUrl?: string;
 };
@@ -44,7 +44,7 @@ export class HttpCLIDaemonClient implements CLIDaemonClient {
       port: options.port,
       timeout: options.timeout ?? 60000,
       baseUrl: options.baseUrl ?? `http://localhost:${options.port}`,
-      authToken: options.authToken,
+      authToken: options.authToken ?? undefined,
     };
   }
 

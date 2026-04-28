@@ -77,7 +77,7 @@ export function parseMentions(
   // Remove mentions from text for cleaner processing
   let text = content;
   for (let i = mentions.length - 1; i >= 0; i--) {
-    const m = mentions[i];
+    const m = mentions[i]!;
     text =
       text.slice(0, m.position) +
       text.slice(m.position + m.displayName.length + 1);
