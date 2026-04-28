@@ -1,0 +1,35 @@
+{
+  "name": "with-collaborative-space",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "react-router build",
+    "dev": "react-router dev",
+    "start": "react-router-serve ./build/server/index.js",
+    "typecheck": "react-router typegen && tsc"
+  },
+  "dependencies": {
+    "@assistant-ui/react": "workspace:*",
+    "@assistant-ui/react-markdown": "workspace:*",
+    "@react-router/node": "^7.14.2",
+    "@react-router/serve": "^7.14.2",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.9.0",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "react-router": "^7.14.2",
+    "tailwind-merge": "^3.5.0",
+    "isbot": "^5"
+  },
+  "devDependencies": {
+    "@react-router/dev": "^7.14.2",
+    "@tailwindcss/vite": "^4.2.4",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "tailwindcss": "^4.2.4",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.10",
+    "vite-tsconfig-paths": "^6.1.1"
+  }
+}
